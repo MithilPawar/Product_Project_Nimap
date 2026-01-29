@@ -1,27 +1,34 @@
-import connectDB from "../config/db.js";
+import pool from "../config/db.js";
 
-export const createProduct = (name, categoryId, cb) => {
-  connectDB.query(
+export const createProduct = async (name, categoryId) => {
+  const [result] = await pool.execute(
     "INSERT INTO products (product_name, category_id) VALUES (?, ?)",
     [name, categoryId],
-    cb,
   );
+  return result;
 };
 
-export const getProducts = (limit, offset, cb) => {
-  const query = `SELECT p.id AS ProductId,
+export const getProductsFromDB = async (limit, offset) => {
+  const dataQuery = `SELECT p.id AS ProductId,
     p.product_name AS ProductName,
     c.id AS CategoryId,
     c.category_name AS CategoryName
     FROM products p
-    JOIN categories c
-    ON p.category_id = c.id
-    LIMIT ? OFFSET ?`;
+    JOIN categories c ON p.category_id = c.id
+    LIMIT ${limit} OFFSET ${offset}`;
 
-  connectDB.query(query, [limit, offset], cb);
+  const countQuery = `SELECT COUNT(*) AS total FROM products`;
+
+  const [rows] = await pool.execute(dataQuery);
+  const [countRows] = await pool.execute(countQuery);
+
+  return {
+    products: rows,
+    total: countRows[0].total,
+  };
 };
 
-export const getProductById = (id, cb) => {
+export const getProductById = async (id) => {
   const query = `SELECT p.id AS ProductId,
     p.product_name AS ProductName,
     c.id AS CategoryId,
@@ -30,17 +37,21 @@ export const getProductById = (id, cb) => {
     JOIN categories c
     ON p.category_id = c.id
     WHERE p.id = ?`;
-  connectDB.query(query, [id], cb);
+  const [rows] = await pool.execute(query, [id]);
+  return rows[0];
 };
 
-export const updateProduct = (id, name, categoryId, cb) => {
-  connectDB.query(
+export const updateProduct = async (id, name, categoryId) => {
+  const [result] = await pool.execute(
     "UPDATE products SET product_name = ?, category_id = ? WHERE id = ?",
     [name, categoryId, id],
-    cb,
   );
+  return result;
 };
 
-export const deleteProduct = (id, cb) => {
-  connectDB.query("DELETE FROM products WHERE id = ?", [id], cb);
+export const deleteProduct = async (id) => {
+  const [result] = await pool.execute("DELETE FROM products WHERE id = ?", [
+    id,
+  ]);
+  return result;
 };

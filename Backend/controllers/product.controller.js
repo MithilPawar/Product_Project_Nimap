@@ -6,93 +6,94 @@ import {
 } from "../models/product.model.js";
 import { fetchProducts } from "../services/product.service.js";
 import { checkCategoryExist } from "../models/category.model.js";
+import { sendSuccess } from "../utils/responseHandler.js";
 
-export const createProduct = (req, res, next) => {
-  const { product_name, category_id } = req.body;
+export const createProduct = async (req, res, next) => {
+  try {
+    const { product_name, category_id } = req.body;
 
-  checkCategoryExist(category_id, (err, result) => {
-    if (err) return next(err);
+    const categoryExists = await checkCategoryExist(category_id);
 
-    if (!result || result.length === 0) {
+    if (!categoryExists) {
       return res.status(400).json({
         message: "Category does not exist",
       });
     }
 
-    createProductModel(product_name, category_id, (err) => {
-      if (err) return next(err);
+    await createProductModel(product_name, category_id);
 
-      return res.status(201).json({
-        message: "Product created successfully",
-      });
-    });
-  });
+    sendSuccess(res, 201, "Product created successfully");
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const getProducts = (req, res, next) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+export const getProducts = async (req, res, next) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
 
-  fetchProducts(page, limit, (err, result) => {
-    if (err) {
-      return next(err);
-    }
-    res.status(200).json(result);
-  });
+    const result = await fetchProducts(page, limit);
+
+    sendSuccess(res, 200, "Products fetched successfully", result);
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const getProductById = (req, res, next) => {
-  const { id } = req.params;
+export const getProductById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
-  getProductByIdModel(id, (err, result) => {
-    if (err) {
-      return next(err);
-    }
+    const product = await getProductByIdModel(id);
 
-    if (result.length === 0) {
+    if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-    res.status(200).json(result[0]);
-  });
+
+    sendSuccess(res, 200, "Product fetched successfully", product);
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const updateProduct = (req, res, next) => {
-  const { id } = req.params;
-  const { product_name, category_id } = req.body;
+export const updateProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { product_name, category_id } = req.body;
 
-  checkCategoryExist(category_id, (err, result) => {
-    if (err) return next(err);
+    const categoryExists = await checkCategoryExist(category_id);
 
-    if (!result || result.length === 0) {
+    if (!categoryExists) {
       return res.status(400).json({
         message: "Category does not exist",
       });
     }
 
-    updateProductModel(id, product_name, category_id, (err, result) => {
-      if (err) return next(err);
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-
-      return res.status(200).json({
-        message: "Product updated successfully",
-      });
-    });
-  });
-};
-
-export const deleteProduct = (req, res, next) => {
-  const { id } = req.params;
-
-  deleteProductModel(id, (err, result) => {
-    if (err) return next(err);
+    const result = await updateProductModel(id, product_name, category_id);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    res.status(200).json({ message: "Product deleted successfully" });
-  });
+    sendSuccess(res, 200, "Product updated successfully");
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const result = await deleteProductModel(id);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    sendSuccess(res, 200, "Product deleted successfully");
+  } catch (err) {
+    next(err);
+  }
 };

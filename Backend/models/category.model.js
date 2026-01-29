@@ -1,33 +1,43 @@
-import connectDB from "../config/db.js";
+import pool from "../config/db.js";
 
-export const createCategory = (name, cb) => {
-  connectDB.query(
+export const createCategory = async (name) => {
+  const [result] = await pool.execute(
     "INSERT INTO categories (category_name) VALUES (?)",
     [name],
-    cb,
   );
+  return result;
 };
 
-export const getCategories = (cb) => {
-  connectDB.query("SELECT * FROM categories", cb);
+export const getCategories = async () => {
+  const [rows] = await pool.execute("SELECT * FROM categories");
+  return rows;
 };
 
-export const getCategoryById = (id, cb) => {
-  connectDB.query("SELECT * FROM categories WHERE id = ?", [id], cb);
+export const getCategoryById = async (id) => {
+  const [rows] = await pool.execute("SELECT * FROM categories WHERE id = ?", [
+    id,
+  ]);
+  return rows[0];
 };
 
-export const updateCategory = (id, name, cb) => {
-  connectDB.query(
+export const updateCategory = async (id, name) => {
+  const [result] = await pool.execute(
     "UPDATE categories SET category_name = ? WHERE id = ?",
     [name, id],
-    cb,
   );
+  return result;
 };
 
-export const deleteCategory = (id, cb) => {
-  connectDB.query("DELETE FROM categories WHERE id = ?", [id], cb);
+export const deleteCategory = async (id) => {
+  const [result] = await pool.execute("DELETE FROM categories WHERE id = ?", [
+    id,
+  ]);
+  return result;
 };
 
-export const checkCategoryExist = (id, cb) => {
-  connectDB.query("SELECT id FROM categories WHERE id = ?", [id], cb);
+export const checkCategoryExist = async (id) => {
+  const [rows] = await pool.execute("SELECT id FROM categories WHERE id = ?", [
+    id,
+  ]);
+  return rows.length > 0;
 };
