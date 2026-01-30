@@ -1,0 +1,31 @@
+<%- include("layout/header") %>
+
+<main class="container">
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Welcome to <span class="brand">Product Store</span></h1>
+      <p class="lead">Manage categories and products easily. Built with Node.js, EJS and MySQL.</p>
+      <div class="cta">
+        <a class="btn" href="/products">View Products</a>
+        <a class="btn" href="/categories">Manage Categories</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="feature">
+      <h3>Categories</h3>
+      <p>Create, update and delete product categories.</p>
+    </div>
+    <div class="feature">
+      <h3>Products</h3>
+      <p>CRUD operations with server-side pagination.</p>
+    </div>
+    <div class="feature">
+      <h3>Clean API</h3>
+      <p>RESTful endpoints for easy integration.</p>
+    </div>
+  </section>
+</main>
+
+<%- include("layout/footer") %>

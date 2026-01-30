@@ -1,0 +1,18 @@
+<%- include("layout/header") %>
+
+<h2>Add Product</h2>
+
+<form action="/products/add" method="POST">
+  <input type="text" name="product_name" placeholder="Product Name" required />
+
+  <select name="category_id" required>
+    <option value="">Select Category</option>
+    <% categories.forEach(cat => { %>
+      <option value="<%= cat.id %>"><%= cat.category_name %></option>
+    <% }) %>
+  </select>
+
+  <button type="submit">Add</button>
+</form>
+
+<%- include("layout/footer") %>

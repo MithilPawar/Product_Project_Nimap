@@ -1,0 +1,57 @@
+<%- include("layout/header") %>
+
+<h2>Product List</h2>
+<a href="/products/add">➕ Add Product</a>
+
+<table border="1" cellpadding="10">
+  <tr>
+    <th>Product ID</th>
+    <th>Product Name</th>
+    <th>Category ID</th>
+    <th>Category Name</th>
+    <th>Actions</th>
+  </tr>
+
+  <% if (Array.isArray(products) && products.length) { %>
+    <% products.forEach(product => { %>
+      <tr>
+        <td><%= product.ProductId %></td>
+        <td><%= product.ProductName %></td>
+        <td><%= product.CategoryId %></td>
+        <td><%= product.CategoryName || "N/A" %></td>
+        <td>
+        <a href="/products/edit/<%= product.ProductId %>" class="btn btn-edit">Edit</a> |
+        <a href="/products/delete/<%= product.ProductId %>" onclick="return confirm('Delete this product?')" class="btn btn-delete">Delete</a>
+      </td>
+      </tr>
+    <% }) %>
+  <% } else { %>
+    <tr>
+      <td colspan="5">No products available</td>
+    </tr>
+  <% } %>
+</table>
+
+<div style="margin-top:20px;">
+
+  <% if (currentPage > 1) { %>
+    <a href="/products?page=<%= currentPage - 1 %>">⬅ Prev</a>
+  <% } %>
+
+  <% for (let i = 1; i <= totalPages; i++) { %>
+    <% if (i === currentPage) { %>
+      <strong style="margin:0 5px;"><%= i %></strong>
+    <% } else { %>
+      <a href="/products?page=<%= i %>" style="margin:0 5px;"><%= i %></a>
+    <% } %>
+  <% } %>
+
+  <% if (currentPage < totalPages) { %>
+    <a href="/products?page=<%= currentPage + 1 %>">Next ➡</a>
+  <% } %>
+
+</div>
+
+
+
+<%- include("layout/footer") %>

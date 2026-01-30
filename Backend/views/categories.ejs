@@ -1,0 +1,30 @@
+<%- include("layout/header") %>
+
+<h2>Category Master</h2>
+
+<form action="/categories/add" method="POST" style="margin-bottom:20px;">
+  <input type="text" name="category_name" placeholder="Enter category name" required />
+  <button type="submit">Add Category</button>
+</form>
+
+<table border="1" cellpadding="10">
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Actions</th>
+  </tr>
+
+  <% categories.forEach(cat => { %>
+    <tr>
+      <td><%= cat.id %></td>
+      <td><%= cat.category_name %></td>
+      <td>
+        <a href="/categories/edit/<%= cat.id %>">Edit</a>
+        |
+        <a href="/categories/delete/<%= cat.id %>" onclick="return confirm('Delete this category?')">Delete</a>
+      </td>
+    </tr>
+  <% }) %>
+</table>
+
+<%- include("layout/footer") %>
